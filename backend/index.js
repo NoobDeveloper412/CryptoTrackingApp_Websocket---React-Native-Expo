@@ -2,7 +2,7 @@ const express = require("express");
 const socketIO = require("socket.io");
 const axios = require("axios");
 require("dotenv").config();
-const PORT = 8000;
+const PORT = process.env.PORT || 8000;
 
 const server = express().listen(PORT, () => {
   console.log(`App Running on PORT=${PORT}\nhttp://localhost:${PORT}/`);
@@ -19,10 +19,18 @@ socketHandler.on("connection", () => {
 
 axios
   .get(
-    env.CRYPTO_API
+    process.env.CRYPTO_API
   )
   .then((response) => {
-    console.log(response.data);
+    const priceList = response.data.data.map(currency=>{
+      return {
+        id:currency.id,
+        name:currency.symbol,
+        price:currency.metrics.market_data.price_usd
+      }
+    })
+
+    console.log(priceList)
   })
   .catch((err) => {
     console.log(err);
