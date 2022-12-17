@@ -17,21 +17,21 @@ socketHandler.on("connection", () => {
   });
 });
 
-axios
-  .get(
-    process.env.CRYPTO_API
-  )
-  .then((response) => {
-    const priceList = response.data.data.map(currency=>{
-      return {
-        id:currency.id,
-        name:currency.symbol,
-        price:currency.metrics.market_data.price_usd
-      }
-    })
+const getList = () => {
+  axios
+    .get(process.env.CRYPTO_API)
+    .then((response) => {
+      const priceList = response.data.data.map((currency) => {
+        return {
+          id: currency.id,
+          name: currency.symbol,
+          price: currency.metrics.market_data.price_usd,
+        };
+      });
 
-    console.log(priceList)
-  })
-  .catch((err) => {
-    console.log(err);
-  });
+      socketHandler.emit("crypto", priceList);
+    })
+    .catch((err) => {
+      console.log(err);
+    });
+};
