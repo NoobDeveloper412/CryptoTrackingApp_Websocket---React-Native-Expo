@@ -1,6 +1,7 @@
 const express = require("express");
 const socketIO = require("socket.io");
 const axios = require("axios");
+require("dotenv").config();
 const PORT = 8000;
 
 const server = express().listen(PORT, () => {
@@ -18,7 +19,7 @@ socketHandler.on("connection", () => {
 
 axios
   .get(
-    "https://data.messari.io/api/v1/assets?fields=id,slug,symbol,metrics/market_data/price_usd"
+    env.CRYPTO_API
   )
   .then((response) => {
     console.log(response.data);
