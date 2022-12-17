@@ -19,7 +19,11 @@ socketHandler.on("connection", () => {
 
 const getList = () => {
   axios
-    .get(process.env.CRYPTO_API)
+    .get(process.env.CRYPTO_API, {
+      headers: {
+        "x-messari-api-key": process.env.API_KEY,
+      },
+    })
     .then((response) => {
       const priceList = response.data.data.map((currency) => {
         return {
@@ -32,6 +36,13 @@ const getList = () => {
       socketHandler.emit("crypto", priceList);
     })
     .catch((err) => {
-      console.log(err);
+      socketHandler.emit("crypto", {
+        error: true,
+        message: err.message,
+      });
     });
 };
+
+setInterval(() => {
+  getList();
+}, 20000);
