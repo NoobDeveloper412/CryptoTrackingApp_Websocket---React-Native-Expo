@@ -70,3 +70,21 @@ app.get("/cryptos/profile/:id", (request, response) => {
       });
     });
 });
+app.get("/cryptos/market-data/:id", (request, response) => {
+  const cryptoId = request.params.id;
+  axios
+    .get(`${process.env.CRYPTO_DETAIL_BASE_URL}/${cryptoId}/metrics/market-data`, {
+      headers: {
+        "x-messari-api-key": process.env.API_KEY,
+      },
+    })
+    .then((responseData) => {
+      response.json(responseData.data.data);
+    })
+    .catch((err) => {
+      response.json({
+        error: true,
+        message: err.message,
+      });
+    });
+});
