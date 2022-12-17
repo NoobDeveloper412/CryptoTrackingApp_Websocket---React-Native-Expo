@@ -4,7 +4,10 @@ const axios = require("axios");
 require("dotenv").config();
 const PORT = process.env.PORT || 8000;
 
-const server = express().listen(PORT, () => {
+const app = express();
+app.use(express.json());
+
+const server = app.listen(PORT, () => {
   console.log(`App Running on PORT=${PORT}\nhttp://localhost:${PORT}/`);
 });
 
@@ -38,7 +41,7 @@ const getList = () => {
     .catch((err) => {
       socketHandler.emit("crypto", {
         error: true,
-        message: err.message,
+        message: err,
       });
     });
 };
@@ -46,3 +49,24 @@ const getList = () => {
 setInterval(() => {
   getList();
 }, 20000);
+
+// APIs for the frontend
+
+app.get("/cryptos/profile/:id", (request, response) => {
+  const cryptoId = request.params.id;
+  axios
+    .get(`${process.env.CRYPTO_BASE_URL}/${cryptoId}/profile`, {
+      headers: {
+        "x-messari-api-key": process.env.API_KEY,
+      },
+    })
+    .then((responseData) => {
+      response.json(responseData.data.data);
+    })
+    .catch((err) => {
+      response.json({
+        error: true,
+        message: err.message,
+      });
+    });
+});
